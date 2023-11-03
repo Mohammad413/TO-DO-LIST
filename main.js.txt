@@ -1,0 +1,142 @@
+let uolist = document.querySelector("#uo-list");
+
+let inval= document.querySelector("#in-val");
+let button= document.querySelector("#button");
+
+
+
+// function to add into localstorage
+function addtask(value){
+  
+   const timestamp = Date.now();
+  // Use a timestamp as a unique identifier
+
+  localStorage.setItem(timestamp.toString(), JSON.stringify(value));
+  // localStorage.clear()
+// Setting up temestamp as unique key for each value which is converted to string. In localstorage everything needs to be in string.
+ 
+}
+
+
+// To remove item from the list and localstorage at same time.
+function removeItem(e) {
+  
+    //this code is to remove tasks from list.
+  
+  if (e.target.id === 'but') {
+    const taskDiv = e.target.parentElement;
+    const hr = taskDiv.nextElementSibling;
+    // this code is to check if taskdiv and hr is there in the div before removing
+    if (taskDiv) {
+      taskDiv.remove();
+    }
+    if (hr) {
+      hr.remove();
+    }
+  }
+  //Code to delete data from localstorage.
+  let deletebut = e.target;
+  let taskDiv = deletebut.parentElement;
+  let listValue = taskDiv.querySelector('li');
+  
+  if (listValue) {
+    listValue = listValue.textContent;
+  
+    for (let i = 0; i < localStorage.length; i++) {
+      let key = localStorage.key(i);
+      let taskValue = localStorage.getItem(key);
+      //Make nested string value into single string.
+      let valString = taskValue.slice(1, -1);
+      //compare teh values and if equal delete them
+      if (valString === listValue) {  
+        localStorage.removeItem(key);
+      }
+    }
+  }
+}
+
+//function to add list and put that list into localstorage in addtask function
+function buttonhandler(){
+ let value=inval.value;
+ let list=document.createElement('li')
+ let div=document.createElement('div')
+ div.setAttribute('class','divv')
+ let deletebutton=document.createElement('button')
+ let linehorizontal=document.createElement('hr')
+ 
+ deletebutton.textContent='DELETE'
+  deletebutton.setAttribute('id','but')
+ list.textContent=value;
+  div.append(list,deletebutton)
+  uolist.append(div)
+  uolist.append(linehorizontal)
+  addtask(value);
+
+ inval.value="";
+  
+  // to remove item from list and the function removeItem is called.
+  deletebutton.addEventListener('click',removeItem)
+
+  
+
+
+  
+
+  
+};
+// adding the task on clicking add button.
+button.addEventListener('click',buttonhandler)
+//removing the task on clicking delete button
+uolist.addEventListener('click', removeItem);
+
+// function to display list on reload webpeage.
+function getItem(){
+
+let tasks = [];
+
+  for (let i = 0; i < localStorage.length; i++) {
+    let key = localStorage.key(i);
+    let timestamp = parseInt(key); // Convert the key back to a timestamp
+    let task = JSON.parse(localStorage.getItem(key));
+    
+    if (task !== null) {
+      tasks.push( {timestamp, task} ); // Store the timestamp along with the task
+    }
+  }
+
+  // Sort tasks by timestamp to maintain the order they were added
+  tasks.sort((a, b) => a.timestamp - b.timestamp);
+
+  // Now, 'tasks' contains an array of objects with both the task and its timestamp
+  
+tasks.forEach((item) => {
+  
+  let list = document.createElement('li');
+  let div = document.createElement('div');
+  div.setAttribute('class', 'divv');
+  let deletebutton = document.createElement('button');
+  let linehorizontal = document.createElement('hr');
+
+  deletebutton.textContent = 'DELETE';
+  deletebutton.setAttribute('id', 'but');
+  list.textContent = item.task;
+ 
+  div.append(list, deletebutton);
+  uolist.append(div);
+  uolist.append(linehorizontal);
+});
+
+    
+  
+}
+
+
+
+
+
+//On window reload get list.
+
+window.addEventListener('load',getItem);
+
+let but= document.querySelector("#but");
+
